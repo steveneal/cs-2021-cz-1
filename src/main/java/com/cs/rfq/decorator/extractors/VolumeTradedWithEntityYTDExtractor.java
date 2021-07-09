@@ -34,7 +34,7 @@ public class VolumeTradedWithEntityYTDExtractor implements RfqMetadataExtractor 
         }
 
         Map<RfqMetadataFieldNames, Object> results = new HashMap<>();
-        results.put(RfqMetadataFieldNames.volumeTradedYearToDate, volume);
+        results.put(RfqMetadataFieldNames.volumeEntityYearToDate, volume);
         return results;
     }
 
