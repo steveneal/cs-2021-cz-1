@@ -49,7 +49,7 @@ public class TradeSideBiasExtractorTest extends AbstractSparkUnitTest {
 
         Object result = meta.get(RfqMetadataFieldNames.tradeSideBiasPastWeek);
 
-        assertEquals(-1, result);
+        assertEquals(-1.0, result);
     }
 
     @Test
@@ -79,7 +79,7 @@ public class TradeSideBiasExtractorTest extends AbstractSparkUnitTest {
 
         Object result = meta.get(RfqMetadataFieldNames.tradeSideBiasPastMonth);
 
-        assertEquals(-1, result);
+        assertEquals(-1.0, result);
     }
 
 

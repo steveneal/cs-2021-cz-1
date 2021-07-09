@@ -40,13 +40,18 @@ public class TradeSideBiasExtractor implements RfqMetadataExtractor {
 
     private double computeRatio(Dataset<Row> trades) {
         long sideBuy = 1, sideSell = 2;
-        try
-        long volumeBuy = trades.filter(trades.col("Side").equalTo(sideBuy)).agg(sum("LastQty")).first().getLong(0);
-        long volumeSell = trades.filter(trades.col("Side").equalTo(sideSell)).agg(sum("LastQty")).first().getLong(0);
 
-        if (volumeBuy==0 || volumeSell==0){
+        Dataset<Row> filteredBuy = trades.filter(trades.col("Side").equalTo(sideBuy));
+        Dataset<Row> filteredSell = trades.filter(trades.col("Side").equalTo(sideSell));
+
+        if (filteredBuy.isEmpty() || filteredSell.isEmpty()){
             return -1;
         }
+
+
+        long volumeBuy = filteredBuy.agg(sum("LastQty")).first().getLong(0);
+        long volumeSell = filteredSell.agg(sum("LastQty")).first().getLong(0);
+
 
         return (double) volumeBuy / volumeSell;
     }

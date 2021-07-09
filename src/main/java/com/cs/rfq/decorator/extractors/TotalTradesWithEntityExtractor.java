@@ -12,7 +12,7 @@ import java.util.Map;
 import static com.cs.rfq.decorator.extractors.RfqMetadataFieldNames.*;
 import static org.apache.spark.sql.functions.sum;
 
-public class VolumeTradedWithEntityExtractor implements RfqMetadataExtractor {
+public class TotalTradesWithEntityExtractor implements RfqMetadataExtractor {
 
     @Override
     public Map<RfqMetadataFieldNames, Object> extractMetaData(Rfq rfq, SparkSession session, Dataset<Row> trades) {
