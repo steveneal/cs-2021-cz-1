@@ -23,7 +23,7 @@ public class InstrumentAveragePriceTest extends AbstractSparkUnitTest {
     @Test
     public void checkAverageWhenAllTradesMatch() {
 
-        String filePath = getClass().getResource("volume-traded-2.json").getPath();
+        String filePath = getClass().getResource("Average-Price-with-last-week-data.json").getPath();
         Dataset<Row> trades = new TradeDataLoader().loadTrades(session, filePath);
 
         InstrumentAveragePriceExtractor extractor = new InstrumentAveragePriceExtractor();
@@ -34,13 +34,13 @@ public class InstrumentAveragePriceTest extends AbstractSparkUnitTest {
         Object resultVolumeAvgPrice = meta.get(RfqMetadataFieldNames.averageTradeVolumeAveragePricePastWeek);
 
         assertEquals(134.01433333333335, resultAvgPrice);
-        assertEquals(134.01433333333335, resultVolumeAvgPrice);
+        assertEquals(127.64988571428572, resultVolumeAvgPrice);
     }
 
     @Test
     public void checkAverageWhenNoTradesMatch() {
 
-        String filePath = getClass().getResource("volume-traded-3.json").getPath();
+        String filePath = getClass().getResource("Average-Price-without-last-week-data.json").getPath();
         Dataset<Row> trades = new TradeDataLoader().loadTrades(session, filePath);
 
         //all test trade data are for 2018 so this will cause no matches
