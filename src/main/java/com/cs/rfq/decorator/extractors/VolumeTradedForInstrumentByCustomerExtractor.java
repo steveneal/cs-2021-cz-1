@@ -12,7 +12,7 @@ import java.util.Map;
 import static com.cs.rfq.decorator.extractors.RfqMetadataFieldNames.*;
 import static org.apache.spark.sql.functions.sum;
 
-public class VolumeInstrumentExtractor implements RfqMetadataExtractor {
+public class VolumeTradedForInstrumentByCustomerExtractor implements RfqMetadataExtractor {
 
     @Override
     public Map<RfqMetadataFieldNames, Object> extractMetaData(Rfq rfq, SparkSession session, Dataset<Row> trades) {
@@ -23,7 +23,8 @@ public class VolumeInstrumentExtractor implements RfqMetadataExtractor {
         long pastYearMs = DateTime.now().withMillis(todayMs).minusYears(1).getMillis();
 
         Dataset<Row> filtered = trades
-                .filter(trades.col("SecurityId").equalTo(rfq.getIsin()));
+                .filter(trades.col("SecurityId").equalTo(rfq.getIsin()))
+                .filter(trades.col("EntityId").equalTo(rfq.getEntityId()));
 
         long volumePastWeek;
         long volumePastMonth;

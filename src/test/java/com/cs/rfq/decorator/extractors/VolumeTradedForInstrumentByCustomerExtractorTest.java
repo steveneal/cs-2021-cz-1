@@ -11,13 +11,14 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
-public class VolumeInstrumentExtractorTest extends AbstractSparkUnitTest {
+public class VolumeTradedForInstrumentByCustomerExtractorTest extends AbstractSparkUnitTest {
 
     private Rfq rfq;
 
     @Before
     public void setup() {
         rfq = new Rfq();
+        rfq.setEntityId(5561279226039690843L);
         rfq.setIsin("AT0000A0VRQ6");
     }
 
@@ -27,7 +28,7 @@ public class VolumeInstrumentExtractorTest extends AbstractSparkUnitTest {
         String filePath = getClass().getResource("volume-instrument-test.json").getPath();
         Dataset<Row> trades = new TradeDataLoader().loadTrades(session, filePath);
 
-        VolumeInstrumentExtractor extractor = new VolumeInstrumentExtractor();
+        VolumeTradedForInstrumentByCustomerExtractor extractor = new VolumeTradedForInstrumentByCustomerExtractor();
 
         Map<RfqMetadataFieldNames, Object> meta = extractor.extractMetaData(rfq, session, trades);
 
@@ -42,13 +43,13 @@ public class VolumeInstrumentExtractorTest extends AbstractSparkUnitTest {
         String filePath = getClass().getResource("volume-instrument-test.json").getPath();
         Dataset<Row> trades = new TradeDataLoader().loadTrades(session, filePath);
 
-        VolumeInstrumentExtractor extractor = new VolumeInstrumentExtractor();
+        VolumeTradedForInstrumentByCustomerExtractor extractor = new VolumeTradedForInstrumentByCustomerExtractor();
 
         Map<RfqMetadataFieldNames, Object> meta = extractor.extractMetaData(rfq, session, trades);
 
         Object result = meta.get(RfqMetadataFieldNames.volumeInstrumentPastMonth);
 
-        assertEquals(800000L, result);
+        assertEquals(750000L, result);
     }
 
     @Test
@@ -57,7 +58,7 @@ public class VolumeInstrumentExtractorTest extends AbstractSparkUnitTest {
         String filePath = getClass().getResource("volume-instrument-test.json").getPath();
         Dataset<Row> trades = new TradeDataLoader().loadTrades(session, filePath);
 
-        VolumeInstrumentExtractor extractor = new VolumeInstrumentExtractor();
+        VolumeTradedForInstrumentByCustomerExtractor extractor = new VolumeTradedForInstrumentByCustomerExtractor();
 
         Map<RfqMetadataFieldNames, Object> meta = extractor.extractMetaData(rfq, session, trades);
 
@@ -75,7 +76,7 @@ public class VolumeInstrumentExtractorTest extends AbstractSparkUnitTest {
         String filePath = getClass().getResource("volume-instrument-test.json").getPath();
         Dataset<Row> trades = new TradeDataLoader().loadTrades(session, filePath);
 
-        VolumeInstrumentExtractor extractor = new VolumeInstrumentExtractor();
+        VolumeTradedForInstrumentByCustomerExtractor extractor = new VolumeTradedForInstrumentByCustomerExtractor();
 
         Map<RfqMetadataFieldNames, Object> meta = extractor.extractMetaData(rfq1, session, trades);
 
