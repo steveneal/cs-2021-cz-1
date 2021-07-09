@@ -37,7 +37,7 @@ public class InstrumentLiquidityExtractor implements RfqMetadataExtractor{
 
         Map<RfqMetadataFieldNames, Object> results = new HashMap<>();
 
-        results.put(volumeInstrumentPastMonth, VolumePastMonth);
+        results.put(liquidity, VolumePastMonth);
 
         return results;
     }
