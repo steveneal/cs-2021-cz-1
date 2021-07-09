@@ -35,9 +35,9 @@ public class VolumeTradedForInstrumentByCustomerExtractor implements RfqMetadata
             volumePastMonth = 0;
             volumePastYear = 0;
         } else {
-            volumePastWeek = filtered.filter(trades.col("TradeDate").$greater(new java.sql.Date(pastWeekMs))).agg(sum("LastQty")).first().getLong(0);
-            volumePastMonth = filtered.filter(trades.col("TradeDate").$greater(new java.sql.Date(pastMonthMs))).agg(sum("LastQty")).first().getLong(0);
-            volumePastYear = filtered.filter(trades.col("TradeDate").$greater(new java.sql.Date(pastYearMs))).agg(sum("LastQty")).first().getLong(0);
+            volumePastWeek = getVolume(filtered, pastWeekMs);
+            volumePastMonth = getVolume(filtered, pastMonthMs);
+            volumePastYear = getVolume(filtered, pastYearMs);
         }
 
         Map<RfqMetadataFieldNames, Object> results = new HashMap<>();
@@ -45,6 +45,14 @@ public class VolumeTradedForInstrumentByCustomerExtractor implements RfqMetadata
         results.put(volumeInstrumentPastMonth, volumePastMonth);
         results.put(volumeInstrumentPastYear, volumePastYear);
         return results;
+    }
+
+    private long getVolume(Dataset<Row> trades, long timeframe) {
+
+        if (trades.filter(trades.col("TradeDate").$greater(new java.sql.Date(timeframe))).isEmpty()) {
+            return 0;
+        }
+        return trades.filter(trades.col("TradeDate").$greater(new java.sql.Date(timeframe))).agg(sum("LastQty")).first().getLong(0);
     }
 
 }
