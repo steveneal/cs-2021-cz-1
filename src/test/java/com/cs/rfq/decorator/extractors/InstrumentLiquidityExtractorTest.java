@@ -11,8 +11,8 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
-public class VolumeTradedWithEntityYTDExtractorTest extends AbstractSparkUnitTest {
-
+// to correct
+public class InstrumentLiquidityExtractorTest extends AbstractSparkUnitTest {
     private Rfq rfq;
 
     @Before
@@ -28,12 +28,11 @@ public class VolumeTradedWithEntityYTDExtractorTest extends AbstractSparkUnitTes
         String filePath = getClass().getResource("volume-traded-1.json").getPath();
         Dataset<Row> trades = new TradeDataLoader().loadTrades(session, filePath);
 
-        VolumeTradedWithEntityYTDExtractor extractor = new VolumeTradedWithEntityYTDExtractor();
-        extractor.setSince("2018-01-01");
+        InstrumentLiquidityExtractor extractor = new InstrumentLiquidityExtractor();
 
         Map<RfqMetadataFieldNames, Object> meta = extractor.extractMetaData(rfq, session, trades);
 
-        Object result = meta.get(RfqMetadataFieldNames.volumeEntityYearToDate);
+        Object result = meta.get(RfqMetadataFieldNames.volumeInstrumentPastMonth);
 
         assertEquals(1_350_000L, result);
     }
@@ -50,9 +49,8 @@ public class VolumeTradedWithEntityYTDExtractorTest extends AbstractSparkUnitTes
 
         Map<RfqMetadataFieldNames, Object> meta = extractor.extractMetaData(rfq, session, trades);
 
-        Object result = meta.get(RfqMetadataFieldNames.volumeEntityYearToDate);
+        Object result = meta.get(RfqMetadataFieldNames.volumeInstrumentPastMonth);
 
         assertEquals(0L, result);
     }
-
 }
