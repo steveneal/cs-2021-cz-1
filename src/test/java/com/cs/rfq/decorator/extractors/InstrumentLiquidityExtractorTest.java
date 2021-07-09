@@ -11,21 +11,19 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
-// to correct
 public class InstrumentLiquidityExtractorTest extends AbstractSparkUnitTest {
     private Rfq rfq;
 
     @Before
     public void setup() {
         rfq = new Rfq();
-        rfq.setEntityId(5561279226039690843L);
         rfq.setIsin("AT0000A0VRQ6");
     }
 
     @Test
-    public void checkVolumeWhenAllTradesMatch() {
+    public void checkLiquidityWhenTradesMatch() {
 
-        String filePath = getClass().getResource("volume-traded-1.json").getPath();
+        String filePath = getClass().getResource("test_liquidity_monthly_match.json").getPath();
         Dataset<Row> trades = new TradeDataLoader().loadTrades(session, filePath);
 
         InstrumentLiquidityExtractor extractor = new InstrumentLiquidityExtractor();
@@ -38,14 +36,12 @@ public class InstrumentLiquidityExtractorTest extends AbstractSparkUnitTest {
     }
 
     @Test
-    public void checkVolumeWhenNoTradesMatch() {
+    public void checkLiquidityWhenNoTradesMatch() {
 
-        String filePath = getClass().getResource("volume-traded-1.json").getPath();
+        String filePath = getClass().getResource("test_liquidity_monthly_nomatch.json").getPath();
         Dataset<Row> trades = new TradeDataLoader().loadTrades(session, filePath);
 
-        //all test trade data are for 2018 so this will cause no matches
-        VolumeTradedWithEntityYTDExtractor extractor = new VolumeTradedWithEntityYTDExtractor();
-        extractor.setSince("2019-01-01");
+        InstrumentLiquidityExtractor extractor = new InstrumentLiquidityExtractor();
 
         Map<RfqMetadataFieldNames, Object> meta = extractor.extractMetaData(rfq, session, trades);
 
