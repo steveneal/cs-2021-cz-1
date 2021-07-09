@@ -15,11 +15,18 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static java.util.Map.*;
+import static java.util.stream.Collectors.toList;
 import static org.apache.spark.sql.functions.sum;
 
 public class RfqProcessor {
@@ -41,6 +48,8 @@ public class RfqProcessor {
         this.streamingContext = streamingContext;
 
         //TODO: use the TradeDataLoader to load the trade data archives
+        TradeDataLoader tradeDataLoader = new TradeDataLoader();
+        this.trades = tradeDataLoader.loadTrades(this.session, "src/test/resources/trades/trades.json");
 
         //TODO: take a close look at how these two extractors are implemented
         extractors.add(new TotalTradesWithEntityExtractor());
@@ -49,10 +58,17 @@ public class RfqProcessor {
 
     public void startSocketListener() throws InterruptedException {
         //TODO: stream data from the input socket on localhost:9000
+        KafkaConsumer.runConsumer(this);
+
+        List<String> l = new ArrayList<>();
 
         //TODO: convert each incoming line to a Rfq object and call processRfq method with it
+        l.stream()
+                .map(Rfq::fromJson)
+                .forEach(this::processRfq);
 
         //TODO: start the streaming context
+        //this.streamingContext.start();
     }
 
     public void processRfq(Rfq rfq) {
@@ -62,7 +78,11 @@ public class RfqProcessor {
         Map<RfqMetadataFieldNames, Object> metadata = new HashMap<>();
 
         //TODO: get metadata from each of the extractors
+        this.extractors.stream()
+                .map(extractor -> extractor.extractMetaData(rfq, this.session, this.trades))
+                .forEach(metadataMap -> metadataMap.forEach(metadata::put));
 
         //TODO: publish the metadata
+        this.publisher.publishMetadata(metadata);
     }
 }

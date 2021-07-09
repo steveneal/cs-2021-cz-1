@@ -89,4 +89,24 @@ public class VolumeTradedByEntityExtractorTest extends AbstractSparkUnitTest {
         assertEquals(0L, result2);
     }
 
+    @Test
+    public void checkVolumeTradedByEntityIfThereIsNoTradesForTheTimeFrame() {
+        Rfq rfq2 = new Rfq();
+        rfq2.setEntityId(5561279226039699999L);
+
+        String filePath = getClass().getResource("volume-traded-by-entity.json").getPath();
+        Dataset<Row> trades = new TradeDataLoader().loadTrades(session, filePath);
+
+        VolumeTradedByEntityExtractor extractor = new VolumeTradedByEntityExtractor();
+
+        Map<RfqMetadataFieldNames, Object> meta = extractor.extractMetaData(rfq2, session, trades);
+
+        Object resultWeek = meta.get(RfqMetadataFieldNames.volumeTradedByEntityPastWeek);
+        Object resultMonth = meta.get(RfqMetadataFieldNames.volumeTradedByEntityPastMonth);
+        Object resultYear = meta.get(RfqMetadataFieldNames.volumeTradedByEntityPastYear);
+
+        assertEquals(0L, resultWeek);
+        assertEquals(0L, resultMonth);
+        assertEquals(100L, resultYear);
+    }
 }

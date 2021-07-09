@@ -1,14 +1,11 @@
 package com.cs.rfq.decorator;
 
-import org.apache.spark.SparkContext;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
-import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.Metadata;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
-import org.apache.spark.streaming.api.java.JavaDStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +34,7 @@ public class TradeDataLoader {
 
 
         //TODO: log a message indicating number of records loaded and the schema used
-        System.out.println(trades.count());
+        log.info(trades.count() + " trades have been loaded using the following schema: " + schema);
         return trades;
     }
 

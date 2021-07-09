@@ -21,13 +21,15 @@ public class RfqDecoratorMain {
         JavaStreamingContext jssc = new JavaStreamingContext(conf, Durations.seconds(5));
 
         //TODO: create a Spark session
-//        SparkSession spark = SparkSession
-//                .builder()
-//                .master("local")
-//                .appName("JavaALSExample")
-//                .getOrCreate();
+        SparkSession spark = SparkSession
+                .builder()
+                .master("local")
+                .appName("JavaALSExample")
+                .getOrCreate();
 
         //TODO: create a new RfqProcessor and set it listening for incoming RFQs
+        RfqProcessor rfqProcessor = new RfqProcessor(spark, null);
+        rfqProcessor.startSocketListener();
         JavaDStream<String> lines = jssc.textFileStream("src/test/resources/trades");
         JavaDStream<String> words = lines.flatMap(x -> Arrays.asList(x.split(" ")).iterator());
         words.print();

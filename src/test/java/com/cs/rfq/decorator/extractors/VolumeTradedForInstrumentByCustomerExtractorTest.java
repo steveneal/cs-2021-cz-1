@@ -90,4 +90,28 @@ public class VolumeTradedForInstrumentByCustomerExtractorTest extends AbstractSp
         assertEquals(0L, result2);
     }
 
+    @Test
+    public void temporaryTest() {
+
+        Rfq rfq2 = new Rfq();
+        rfq2.setEntityId(5561279226039690843L);
+        rfq2.setIsin("BB0000A0VR22");
+
+        String filePath = getClass().getResource("volume-instrument-test.json").getPath();
+        Dataset<Row> trades = new TradeDataLoader().loadTrades(session, filePath);
+
+        VolumeTradedForInstrumentByCustomerExtractor extractor = new VolumeTradedForInstrumentByCustomerExtractor();
+
+        Map<RfqMetadataFieldNames, Object> meta = extractor.extractMetaData(rfq2, session, trades);
+
+        Object result = meta.get(RfqMetadataFieldNames.volumeInstrumentPastWeek);
+        Object result1 = meta.get(RfqMetadataFieldNames.volumeInstrumentPastMonth);
+        Object result2 = meta.get(RfqMetadataFieldNames.volumeInstrumentPastYear);
+
+
+        assertEquals(0L, result);
+        assertEquals(0L, result1);
+        assertEquals(100L, result2);
+    }
+
 }
