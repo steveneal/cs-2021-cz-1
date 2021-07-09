@@ -1,33 +1,17 @@
 package com.cs.rfq.decorator;
 
-import com.cs.rfq.decorator.extractors.RfqMetadataExtractor;
-import com.cs.rfq.decorator.extractors.RfqMetadataFieldNames;
-import com.cs.rfq.decorator.extractors.TotalTradesWithEntityExtractor;
-import com.cs.rfq.decorator.extractors.VolumeTradedWithEntityYTDExtractor;
+import com.cs.rfq.decorator.extractors.*;
 import com.cs.rfq.decorator.publishers.MetadataJsonLogPublisher;
 import com.cs.rfq.decorator.publishers.MetadataPublisher;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
-import org.apache.spark.streaming.api.java.JavaDStream;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
-import org.joda.time.DateTime;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import static java.util.Map.*;
-import static java.util.stream.Collectors.toList;
-import static org.apache.spark.sql.functions.sum;
 
 public class RfqProcessor {
 
@@ -52,20 +36,18 @@ public class RfqProcessor {
         this.trades = tradeDataLoader.loadTrades(this.session, "src/test/resources/trades/trades.json");
 
         //TODO: take a close look at how these two extractors are implemented
-        extractors.add(new TotalTradesWithEntityExtractor());
-        extractors.add(new VolumeTradedWithEntityYTDExtractor());
+        //        extractors.add(new TotalTradesWithEntityExtractor());
+        extractors.add(new InstrumentAveragePriceExtractor());
+        extractors.add(new InstrumentLiquidityExtractor());
+        extractors.add(new TradeSideBiasExtractor());
+        extractors.add(new VolumeTradedByEntityExtractor());
+        extractors.add(new VolumeTradedForInstrumentByCustomerExtractor());
+//        extractors.add(new VolumeTradedWithEntityYTDExtractor());
     }
 
     public void startSocketListener() throws InterruptedException {
         //TODO: stream data from the input socket on localhost:9000
         KafkaConsumer.runConsumer(this);
-
-        List<String> l = new ArrayList<>();
-
-        //TODO: convert each incoming line to a Rfq object and call processRfq method with it
-        l.stream()
-                .map(Rfq::fromJson)
-                .forEach(this::processRfq);
 
         //TODO: start the streaming context
         //this.streamingContext.start();
