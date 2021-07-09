@@ -1,5 +1,6 @@
 package com.cs.rfq.decorator;
 
+import com.google.gson.JsonSyntaxException;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -46,7 +47,13 @@ public class KafkaConsumer {
                 System.out.printf("Consumer Record:(%d, %s, %d, %d)\n",
                         record.key(), record.value(),
                         record.partition(), record.offset());
-                rfqProcessor.processRfq(Rfq.fromJson(record.value()));
+                Rfq rfq;
+                try {
+                    rfq = Rfq.fromJson(record.value());
+                    rfqProcessor.processRfq(rfq);
+                } catch (JsonSyntaxException e) {
+                    e.printStackTrace();
+                }
             });
 
             consumer.commitAsync();

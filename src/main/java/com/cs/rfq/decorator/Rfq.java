@@ -1,6 +1,7 @@
 package com.cs.rfq.decorator;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 
@@ -19,7 +20,7 @@ public class Rfq implements Serializable {
     private Double price;
     private String side;
 
-    public static Rfq fromJson(String json) {
+    public static Rfq fromJson(String json) throws JsonSyntaxException {
         Gson g = new Gson();
         return g.fromJson(json, Rfq.class);
     }

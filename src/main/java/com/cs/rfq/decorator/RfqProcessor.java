@@ -36,13 +36,11 @@ public class RfqProcessor {
         this.trades = tradeDataLoader.loadTrades(this.session, "src/test/resources/trades/trades.json");
 
         //TODO: take a close look at how these two extractors are implemented
-        //        extractors.add(new TotalTradesWithEntityExtractor());
         extractors.add(new InstrumentAveragePriceExtractor());
         extractors.add(new InstrumentLiquidityExtractor());
         extractors.add(new TradeSideBiasExtractor());
         extractors.add(new VolumeTradedByEntityExtractor());
         extractors.add(new VolumeTradedForInstrumentByCustomerExtractor());
-//        extractors.add(new VolumeTradedWithEntityYTDExtractor());
     }
 
     public void startSocketListener() throws InterruptedException {
@@ -54,6 +52,7 @@ public class RfqProcessor {
     }
 
     public void processRfq(Rfq rfq) {
+        System.out.println("here i am");
         log.info(String.format("Received Rfq: %s", rfq.toString()));
 
         //create a blank map for the metadata to be collected
@@ -61,8 +60,13 @@ public class RfqProcessor {
 
         //TODO: get metadata from each of the extractors
         this.extractors.stream()
-                .map(extractor -> extractor.extractMetaData(rfq, this.session, this.trades))
+                .map(extractor -> {
+                    System.out.println("new extractor");
+                    return extractor.extractMetaData(rfq, this.session, this.trades);
+                })
                 .forEach(metadataMap -> metadataMap.forEach(metadata::put));
+
+        System.out.println("here i am now");
 
         //TODO: publish the metadata
         this.publisher.publishMetadata(metadata);
