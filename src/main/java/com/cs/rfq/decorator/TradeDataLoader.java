@@ -16,7 +16,6 @@ public class TradeDataLoader {
     private final static Logger log = LoggerFactory.getLogger(TradeDataLoader.class);
 
     public Dataset<Row> loadTrades(SparkSession session, String path) {
-        //TODO: create an explicit schema for the trade data in the JSON files
         StructType schema = new StructType(new StructField[]{
                 new StructField("TraderId", LongType, false, Metadata.empty()),
                 new StructField("EntityId", LongType, false, Metadata.empty()),
@@ -29,11 +28,8 @@ public class TradeDataLoader {
                 new StructField("OrderID", LongType, false, Metadata.empty())
         });
 
-        //TODO: load the trades dataset
         Dataset<Row> trades = session.read().schema(schema).json(path);
 
-
-        //TODO: log a message indicating number of records loaded and the schema used
         log.info(trades.count() + " trades have been loaded using the following schema: " + schema);
         return trades;
     }

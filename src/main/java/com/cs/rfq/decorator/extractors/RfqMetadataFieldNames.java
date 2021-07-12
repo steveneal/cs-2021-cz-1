@@ -14,5 +14,13 @@ public enum RfqMetadataFieldNames {
     volumeInstrumentPastYear,
     averageTradePricePastWeek,
     averageTradeVolumeAveragePricePastWeek,
-    liquidity
+    liquidity,
+    // rfq fields
+    id,
+    instrumentId,
+    traderId,
+    entityId,
+    qty,
+    price,
+    side
 }

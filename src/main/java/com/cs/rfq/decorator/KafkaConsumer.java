@@ -40,7 +40,7 @@ public class KafkaConsumer {
                 try {
                     Rfq rfq = Rfq.fromJson(record.value());
                     rfqProcessor.processRfq(rfq);
-                } catch (JsonSyntaxException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             });

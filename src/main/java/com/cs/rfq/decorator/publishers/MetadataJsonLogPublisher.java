@@ -1,5 +1,6 @@
 package com.cs.rfq.decorator.publishers;
 
+import com.cs.rfq.decorator.KafkaProducer;
 import com.cs.rfq.decorator.extractors.RfqMetadataFieldNames;
 import com.google.gson.GsonBuilder;
 import org.slf4j.Logger;
@@ -15,5 +16,6 @@ public class MetadataJsonLogPublisher implements MetadataPublisher {
     public void publishMetadata(Map<RfqMetadataFieldNames, Object> metadata) {
         String s = new GsonBuilder().setPrettyPrinting().create().toJson(metadata);
         log.info(String.format("Publishing metadata:%n%s", s));
+        KafkaProducer.sendMessage(s);
     }
 }

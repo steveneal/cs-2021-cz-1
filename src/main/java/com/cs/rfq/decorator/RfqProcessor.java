@@ -3,6 +3,7 @@ package com.cs.rfq.decorator;
 import com.cs.rfq.decorator.extractors.*;
 import com.cs.rfq.decorator.publishers.MetadataJsonLogPublisher;
 import com.cs.rfq.decorator.publishers.MetadataPublisher;
+import com.cs.rfq.utils.ConfigReader;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
@@ -28,11 +29,8 @@ public class RfqProcessor {
     public RfqProcessor(SparkSession session) {
         this.session = session;
 
-        //TODO: use the TradeDataLoader to load the trade data archives
-        TradeDataLoader tradeDataLoader = new TradeDataLoader();
-        this.trades = tradeDataLoader.loadTrades(this.session, "src/test/resources/trades/trades.json");
+        this.trades =  new TradeDataLoader().loadTrades(this.session, ConfigReader.getTradesPath());
 
-        //TODO: take a close look at how these two extractors are implemented
         extractors.add(new InstrumentAveragePriceExtractor());
         extractors.add(new InstrumentLiquidityExtractor());
         extractors.add(new TradeSideBiasExtractor());
@@ -41,31 +39,22 @@ public class RfqProcessor {
     }
 
     public void startSocketListener() throws InterruptedException {
-        //TODO: stream data from the input socket on localhost:9000
         KafkaConsumer.runConsumer(this);
-
-        //TODO: start the streaming context
-        //this.streamingContext.start();
     }
 
     public void processRfq(Rfq rfq) {
-        System.out.println("here i am");
         log.info(String.format("Received Rfq: %s", rfq.toString()));
 
-        //create a blank map for the metadata to be collected
         Map<RfqMetadataFieldNames, Object> metadata = new HashMap<>();
 
-        //TODO: get metadata from each of the extractors
         this.extractors.stream()
-                .map(extractor -> {
-                    System.out.println("new extractor");
-                    return extractor.extractMetaData(rfq, this.session, this.trades);
-                })
+                .map(extractor -> extractor.extractMetaData(rfq, this.session, this.trades))
                 .forEach(metadataMap -> metadataMap.forEach(metadata::put));
 
-        System.out.println("here i am now");
+        Map<RfqMetadataFieldNames, Object> rfqMap = rfq.toMap();
 
-        //TODO: publish the metadata
+        rfqMap.forEach(metadata::put);
+
         this.publisher.publishMetadata(metadata);
     }
 }
