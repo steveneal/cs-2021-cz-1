@@ -1,25 +1,46 @@
 package com.cs.rfq.decorator;
 
+import com.cs.rfq.decorator.extractors.RfqMetadataFieldNames;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.Serializable;
 import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.Map;
+
+import static com.cs.rfq.decorator.extractors.RfqMetadataFieldNames.instrumentId;
 
 public class Rfq implements Serializable {
     private String id;
+    @SerializedName("instrumentId")
     private String isin;
     private Long traderId;
     private Long entityId;
+    @SerializedName("qty")
     private Long quantity;
     private Double price;
     private String side;
 
-    public static Rfq fromJson(String json) {
-        //TODO: build a new RFQ setting all fields from data passed in the RFQ json message
-        return null;
+    public static Rfq fromJson(String json) throws JsonSyntaxException {
+        Gson g = new Gson();
+        return g.fromJson(json, Rfq.class);
     }
+
+    public HashMap<RfqMetadataFieldNames, Object> toMap() {
+        final HashMap<RfqMetadataFieldNames, Object> map = new HashMap<>();
+        map.put(RfqMetadataFieldNames.id, this.id);
+        map.put(RfqMetadataFieldNames.instrumentId, this.isin);
+        map.put(RfqMetadataFieldNames.traderId, this.traderId);
+        map.put(RfqMetadataFieldNames.entityId, this.entityId);
+        map.put(RfqMetadataFieldNames.qty, this.quantity);
+        map.put(RfqMetadataFieldNames.price, this.price);
+        map.put(RfqMetadataFieldNames.side, this.side);
+        return map;
+    }
+
 
     @Override
     public String toString() {
