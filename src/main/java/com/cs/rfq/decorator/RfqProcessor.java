@@ -19,17 +19,14 @@ public class RfqProcessor {
 
     private final SparkSession session;
 
-    private final JavaStreamingContext streamingContext;
-
     private Dataset<Row> trades;
 
     private final List<RfqMetadataExtractor> extractors = new ArrayList<>();
 
     private final MetadataPublisher publisher = new MetadataJsonLogPublisher();
 
-    public RfqProcessor(SparkSession session, JavaStreamingContext streamingContext) {
+    public RfqProcessor(SparkSession session) {
         this.session = session;
-        this.streamingContext = streamingContext;
 
         //TODO: use the TradeDataLoader to load the trade data archives
         TradeDataLoader tradeDataLoader = new TradeDataLoader();
